@@ -11,12 +11,12 @@ contract FundMeTest is Test {
     // This function is called before each test
     function setUp() external {
         // Initialize variables or set up the environment for tests
-        fundMe = new FundMe(0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419);
+        fundMe = new FundMe(0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38);
         console.log("This will get printed first!");
     }
 
     function testMinimumDollarIsFive() public {
-        assertEq(fundMe.MINIMUM_USD(), 6e18);
+        assertEq(fundMe.MINIMUM_USD(), 5e18);
     }
 
     function testOwnerIsMsgSender() public {
