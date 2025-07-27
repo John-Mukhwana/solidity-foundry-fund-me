@@ -12,7 +12,9 @@ contract FundMeTest is Test {
     // This function is called before each test
     function setUp() external {
         // Initialize variables or set up the environment for tests
-        fundMe = new FundMe(0x694AA1769357215DE4FAC081bf1f309aDC325306);
+        // fundMe = new FundMe(0x694AA1769357215DE4FAC081bf1f309aDC325306);
+        DeployFundMe deployFundMe = new DeployFundMe();
+        fundMe = deployFundMe.run();
         console.log("This will get printed first!");
     }
 
@@ -23,7 +25,7 @@ contract FundMeTest is Test {
     function testOwnerIsMsgSender() public {
         console.log(fundMe.getOwner());
         console.log(msg.sender);
-        assertEq(fundMe.getOwner(), address(this));
+        assertEq(fundMe.getOwner(), msg.sender);
     }
 
     // Added this to fix the testing error whereversion 4 was
