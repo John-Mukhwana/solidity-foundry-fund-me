@@ -278,6 +278,19 @@ rm -rf lib/
 forge install
 ```
 
+
+## 🧑‍💻 Lessons Learned & Best Practices
+
+- Always use the correct contract address (not a wallet address) for external contract calls, especially for Chainlink price feeds.
+- When testing contracts that interact with live oracles, use `--fork-url` to fork a real network (e.g., Sepolia) so the contract exists at the given address.
+- Mark test functions as `view` if they do not modify state to avoid Solidity warnings.
+- Use public getter functions to access private or internal state variables in tests.
+- Use Foundry's test flags (`-v`, `-vv`, `-vvv`) and `console.log` for effective debugging.
+- Use `forge coverage` to measure how much of your code is tested.
+- Export environment variables in your shell or use tools like dotenv-cli to load `.env` files for Foundry commands.
+- Use Chainlink documentation to find real price feed addresses for your network.
+- Document every learning step and resolved error for future reference and reproducibility.
+
 ## 📚 Additional Resources
 
 - [Foundry Documentation](https://book.getfoundry.sh/)
