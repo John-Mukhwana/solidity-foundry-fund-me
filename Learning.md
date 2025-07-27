@@ -31,24 +31,29 @@
 ---
 
 
+
 ## July 27, 2025
 
 ### Advanced Testing, Deployment, and Debugging
 - Added more advanced tests, including checking the price feed version and using real Chainlink price feed contract addresses.
 - Used `console.log` for debugging test output and confirming values in tests.
 - Learned the difference between contract addresses (used for price feeds) and wallet/public addresses.
-- Understood that forking a real network (e.g., Sepolia) with `--fork-url` is required to interact with real deployed contracts in tests.
+- Understood that forking a real network (e.g., Sepolia, Mainnet) with `--fork-url` is required to interact with real deployed contracts in tests.
 - Fixed test failures by ensuring the correct contract address and network fork are used.
 - Learned to use Chainlink documentation to find the correct price feed contract address for a given network.
-- Practiced using `forge test --fork-url $SEPOLIA_RPC_URL` and exporting environment variables in PowerShell.
+- Practiced using `forge test --fork-url $SEPOLIA_RPC_URL` and `forge test --fork-url $MAINNET_RPC_URL` and exporting environment variables in PowerShell and Bash.
 - Fixed Solidity warnings by marking test functions as `view` when they do not modify state.
 - Learned about and used `forge coverage` to check how much of the contract code is tested.
 - Created a deployment script (`DeployFundMe.s.sol`) for automated contract deployment using Foundry's scripting system.
 - Documented the difference between public, private, and internal variables and their impact on testing and contract interaction.
 - Understood how to retrieve deployed contract addresses from deployment logs, block explorers, or Chainlink documentation.
 - Updated `.env` file and learned how to load environment variables for Foundry commands.
+- Learned the configuration pattern for managing network-specific addresses using a config contract (e.g., `HelperConfig`).
+- Understood how to access struct members from a public getter by first calling the getter as a function, then accessing the member (e.g., `helperConfig.activeNetworkConfig().priceFeed`).
+- Clarified that `msg.sender` in contract constructors is set to the broadcast account when using Foundry's `vm.startBroadcast` in scripts.
 
 ---
+
 
 
 ## Key Takeaways
@@ -61,6 +66,9 @@
 - Use Chainlink documentation to find real price feed addresses for your network.
 - Use `--fork-url` to fork a real network for integration tests with live contracts.
 - Export environment variables in your shell or use tools like dotenv-cli to load `.env` files.
+- Use a configuration pattern (e.g., `HelperConfig`) to manage network-specific addresses and mocks.
+- When accessing struct members from a public getter, call the getter as a function, then access the member.
+- `msg.sender` in contract constructors is set to the broadcast account when using `vm.startBroadcast` in scripts.
 - Document every learning step for future reference and reproducibility.
 
 ---

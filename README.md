@@ -11,18 +11,37 @@ A decentralized crowdfunding smart contract built with Foundry that allows users
 - **Foundry Framework**: Built with modern Solidity development tools
 
 
-## �️ Useful Commands & Options Learned
+
+## 🛠️ Useful Commands & Options Learned
 
 - `forge test --match-test <testName>`: Run a specific test function by name.
 - `forge test --match-path <path/to/testFile.t.sol>`: Run tests in a specific test file.
 - `forge test -v`, `-vv`, `-vvv`: Increase test output verbosity for debugging.
 - `forge test --fork-url $SEPOLIA_RPC_URL`: Run tests on a forked Sepolia network (enables interaction with real deployed contracts).
+- `forge test --fork-url $MAINNET_RPC_URL`: Run tests on a forked Ethereum mainnet.
 - `forge coverage`: Generate a test coverage report to see which lines of code are tested.
+- `forge test --fork-url $env:SEPOLIA_RPC_URL`: (PowerShell) Use environment variable for forking.
+- `dotenv -e .env -- forge test ...`: Use dotenv-cli to load environment variables from `.env` file.
 - `console.log(...)`: Print values to the test output for debugging (from `forge-std`).
 - `vm.expectRevert()`: Expect a revert in the next transaction (for negative test cases).
-- `export VAR=value` (Linux/macOS) or `$env:VAR="value"` (PowerShell): Set environment variables for use in Foundry commands.
-- `dotenv -e .env -- forge test ...`: Use dotenv-cli to load .env variables automatically for Foundry commands.
+- `export VAR=value` (Linux/macOS) or `$env:VAR=\"value\"` (PowerShell): Set environment variables for use in Foundry commands.
 - Marking test functions as `view`: Suppress Solidity warnings when the function does not modify state.
+
+## 🧩 Architectural Patterns & Best Practices
+
+- **Configuration Pattern:** Used a `HelperConfig` contract to manage external contract addresses (like Chainlink price feeds) for different networks (mainnet, testnets, local). This avoids hardcoding and makes the codebase network-agnostic.
+- **Mock Contracts:** Automatically deploys a mock price feed on local Anvil chains for reliable testing.
+- **Environment Variables:** Store sensitive data and RPC URLs in a `.env` file and load them into your shell for secure, flexible configuration.
+- **Public Struct Getter Usage:** When accessing a public struct, call the getter as a function and then access its members (e.g., `helperConfig.activeNetworkConfig().priceFeed`).
+- **Test Function Mutability:** Mark test functions as `view` if they do not modify state to avoid compiler warnings.
+- **Logging & Debugging:** Use `console.log` in tests and scripts for debugging contract state and addresses.
+
+## 📝 Troubleshooting & Common Errors
+
+- **EvmError: Revert:** Usually caused by using an incorrect or non-existent contract address on the forked network.
+- **invalid provider URL:** Caused by passing the literal string instead of the environment variable value. Always use `$SEPOLIA_RPC_URL` or `$env:SEPOLIA_RPC_URL`.
+- **Member not found or not visible:** When accessing struct members from a public getter, first call the getter, then access the member.
+- **msg.sender in Scripts:** When deploying via `vm.startBroadcast`, `msg.sender` in the constructor is set to the broadcast account, not the script or test contract.
 
 
 ```
