@@ -11,7 +11,8 @@ contract DeployFundMe is Script {
         //Before startBroadcast -> Not a real transaction TX
         HelperConfig helperConfig = new HelperConfig();
 
-        address ethUsdPriceFeed = helperConfig.activeNetworkConfig.priceFeed;
+        address ethUsdPriceFeed = helperConfig.activeNetworkConfig();
+
         console.log("ETH/USD Price Feed Address:", ethUsdPriceFeed);
         // after startBroadcast -> A real transaction TX
         vm.startBroadcast();

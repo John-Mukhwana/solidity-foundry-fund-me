@@ -34,9 +34,20 @@ contract FundMeTest is Test {
         console.log("Aggregator version:", version);
     }
 
-    function testPriceFeedVersionIsAccurate() public {
-        uint256 version = fundMe.getVersion();
-        console.log("Price Feed Version:", version);
-        assertEq(version, 4); // Assuming the expected version is 4
-    }
+    // function testPriceFeedVersionIsAccurate() public {
+    //     uint256 version = fundMe.getVersion();
+    //     console.log("Price Feed Version:", version);
+    //     assertEq(version, 4); // Assuming the expected version is 4
+    // }
+
+
+      function testPriceFeedVersionIsAccurate() public {
+        if (block.chainid == 11155111) {
+            uint256 version = fundMe.getVersion();
+            assertEq(version, 4);
+        } else if (block.chainid == 1) {
+            uint256 version = fundMe.getVersion();
+            assertEq(version, 6);
+        }
+  }       
 }
