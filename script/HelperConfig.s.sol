@@ -14,6 +14,9 @@ contract HelperConfig is Script{
 
     NetworkConfig public activeNetworkConfig;
 
+    unint8 public constant DECIMALS = 8;
+    int256 public constant INITIAL_ANSWER = 2000e8; // 2000 USD with 8 decimals
+
     struct NetworkConfig {
         address priceFeed;
     }
@@ -47,7 +50,7 @@ contract HelperConfig is Script{
         //1.deploy mocks when we are on a local anvil chain
 
         vm.startBroadcast();
-        MockV3Aggregator mockPriceFeed = new MockV3Aggregator(8, 2000e8); // 2000 USD with 8 decimals
+        MockV3Aggregator mockPriceFeed = new MockV3Aggregator(DECIMALS, INITIAL_ANSWER); // 2000 USD with 8 decimals
         vm.stopBroadcast();
 
         NetworkConfig memory anvilConfig = NetworkConfig({
