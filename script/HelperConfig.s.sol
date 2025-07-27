@@ -7,7 +7,7 @@ pragma solidity ^0.8.30;
 
 import {Script} from "forge-std/Script.sol";
 
-contract HelperConfig {
+contract HelperConfig is Script{
     //If we are on a local anvil,we deploy mocks
     // otherwise ,grab the existing address from the live network
 
@@ -42,7 +42,11 @@ contract HelperConfig {
         return mainnetConfig;
     }
 
-    function getAnvilEthConfig() public pure returns (NetworkConfig memory) {
+    function getAnvilEthConfig() public  returns (NetworkConfig memory) {
         //1.deploy mocks when we are on a local anvil chain
+
+        vm.startBroadcast();
+    
+        vm.stopBroadcast();
     }
 }
