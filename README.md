@@ -10,7 +10,20 @@ A decentralized crowdfunding smart contract built with Foundry that allows users
 - **Gas Optimized**: Efficient storage patterns and custom errors
 - **Foundry Framework**: Built with modern Solidity development tools
 
-## 📁 Project Structure
+
+## �️ Useful Commands & Options Learned
+
+- `forge test --match-test <testName>`: Run a specific test function by name.
+- `forge test --match-path <path/to/testFile.t.sol>`: Run tests in a specific test file.
+- `forge test -v`, `-vv`, `-vvv`: Increase test output verbosity for debugging.
+- `forge test --fork-url $SEPOLIA_RPC_URL`: Run tests on a forked Sepolia network (enables interaction with real deployed contracts).
+- `forge coverage`: Generate a test coverage report to see which lines of code are tested.
+- `console.log(...)`: Print values to the test output for debugging (from `forge-std`).
+- `vm.expectRevert()`: Expect a revert in the next transaction (for negative test cases).
+- `export VAR=value` (Linux/macOS) or `$env:VAR="value"` (PowerShell): Set environment variables for use in Foundry commands.
+- `dotenv -e .env -- forge test ...`: Use dotenv-cli to load .env variables automatically for Foundry commands.
+- Marking test functions as `view`: Suppress Solidity warnings when the function does not modify state.
+
 
 ```
 foundry-fund-me/
