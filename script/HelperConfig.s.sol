@@ -28,7 +28,7 @@ contract HelperConfig is Script{
         } else if (block.chainid == 1) {
             activeNetworkConfig = getMainnetEthConfig();
         } else {
-            activeNetworkConfig = getOrCreateAnvilEthConfi(); // Default to Anvil for other networks
+            activeNetworkConfig = getOrCreateAnvilEthConfig(); // Default to Anvil for other networks
         }
     }
 
