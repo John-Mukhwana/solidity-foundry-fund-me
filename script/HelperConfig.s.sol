@@ -9,12 +9,23 @@ import {Script} from "forge-std/Script.sol";
 
 contract HelperConfig{
 //If we are on a local anvil,we deploy mocks
-// otherwise ,gran the existing adress from the live network
+// otherwise ,grab the existing address from the live network
+
+   NetworkConfig public activeNetworkConfig;
 
    struct NetworkConfig {
        address priceFeed;
    }
-
+ 
+  constructor() {
+       if (block.chainid == 11155111) { // Sepolia chain ID
+           activeNetworkConfig = getSepoliaEthConfig();
+       } else if (block.chainid == 1) { 
+           activeNetworkConfig = getAnvilEthConfig();
+       } else {
+           activeNetworkConfig = getAnvilEthConfig(); // Default to Anvil for other networks
+       }
+   }
    
    function getSepoliaEthConfig() public pure returns (NetworkConfig memory){
          NetworkConfig memory sepoliaConfig = NetworkConfig({
