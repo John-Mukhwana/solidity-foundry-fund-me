@@ -14,7 +14,7 @@ contract HelperConfig is Script{
 
     NetworkConfig public activeNetworkConfig;
 
-    unint8 public constant DECIMALS = 8;
+    uint8 public constant DECIMALS = 8;
     int256 public constant INITIAL_ANSWER = 2000e8; // 2000 USD with 8 decimals
 
     struct NetworkConfig {
@@ -28,7 +28,7 @@ contract HelperConfig is Script{
         } else if (block.chainid == 1) {
             activeNetworkConfig = getMainnetEthConfig();
         } else {
-            activeNetworkConfig = getAnvilEthConfig(); // Default to Anvil for other networks
+            activeNetworkConfig = getOrCreateAnvilEthConfi(); // Default to Anvil for other networks
         }
     }
 
@@ -46,7 +46,7 @@ contract HelperConfig is Script{
         return mainnetConfig;
     }
 
-    function getAnvilEthConfig() public  returns (NetworkConfig memory) {
+    function getOrCreateAnvilEthConfig() public  returns (NetworkConfig memory) {
         //1.deploy mocks when we are on a local anvil chain
 
         if (activeNetworkConfig.priceFeed != address(0)) {
