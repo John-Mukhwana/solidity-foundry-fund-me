@@ -10,7 +10,7 @@ contract FundMeTest is Test {
     FundMe fundMe;
 
     address USER =makeAddr("user")
-
+    uint256 constant SEND_VALUE = 10e18; // 10 ETH in wei
     // This function is called before each test
     function setUp() external {
         // Initialize variables or set up the environment for tests
@@ -59,9 +59,9 @@ contract FundMeTest is Test {
   }
 
   function testFundUpdatesFundedDataStructure() public{
-    vm.prank(USER); // the nect Tx  will be send by
-    fundMe.fund{value: 10e18}();
+    vm.prank(USER); // the next Tx will be sent by user
+    fundMe.fund{value: SEND_VALUE}();
     uint256 fundedAmount = fundMe.getAddressToAmountFunded(address(this));
-    assertEq(fundedAmount, 10e18); // Check if the funded amount is correctly updated
+    assertEq(fundedAmount, SEND_VALUE); // Check if the funded amount is correctly updated
   }
 }
