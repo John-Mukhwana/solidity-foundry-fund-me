@@ -63,7 +63,7 @@ contract FundMeTest is Test {
   function testFundUpdatesFundedDataStructure() public{
     vm.prank(USER); // the next Tx will be sent by user
     fundMe.fund{value: SEND_VALUE}();
-    uint256 fundedAmount = fundMe.getAddressToAmountFunded(address(this));
+    uint256 fundedAmount = fundMe.getAddressToAmountFunded(address(USER));
     assertEq(fundedAmount, SEND_VALUE); // Check if the funded amount is correctly updated
   }
 }
