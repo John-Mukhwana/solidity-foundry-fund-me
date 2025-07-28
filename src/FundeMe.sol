@@ -86,7 +86,7 @@ contract FundMe {
     }
 
     /**
-     * Getter Functions
+     * Getter Functions-view , pure, constant functions
      */
 
     /**

@@ -9,6 +9,8 @@ import {DeployFundMe} from "../script/DeployFundMe.s.sol";
 contract FundMeTest is Test {
     FundMe fundMe;
 
+    address USER =makeAddr("user")
+
     // This function is called before each test
     function setUp() external {
         // Initialize variables or set up the environment for tests
@@ -49,5 +51,17 @@ contract FundMeTest is Test {
             uint256 version = fundMe.getVersion();
             assertEq(version, 6);
         }
-  }       
+  } 
+
+  function testFundFailsWihtoutEnoughEth() public{
+    vm.expectRevert(); //hey, the next line should revert
+    fundMe.fund(); // This should revert if not enough ETH is sent
+  }
+
+  function testFundUpdatesFundedDataStructure() public{
+    vm.prank(USER); // the nect Tx  will be send by
+    fundMe.fund{value: 10e18}();
+    uint256 fundedAmount = fundMe.getAddressToAmountFunded(address(this));
+    assertEq(fundedAmount, 10e18); // Check if the funded amount is correctly updated
+  }
 }
