@@ -9,8 +9,9 @@ import {DeployFundMe} from "../script/DeployFundMe.s.sol";
 contract FundMeTest is Test {
     FundMe fundMe;
 
-    address USER =makeAddr("user")
+    address USER =makeAddr("user");
     uint256 constant SEND_VALUE = 10e18; // 10 ETH in wei
+    uint256 constant STARTING_BALANCE = 100 ether; // Starting balance for the user
     // This function is called before each test
     function setUp() external {
         // Initialize variables or set up the environment for tests
@@ -18,6 +19,7 @@ contract FundMeTest is Test {
         DeployFundMe deployFundMe = new DeployFundMe();
         fundMe = deployFundMe.run();
         console.log("This will get printed first!");
+        vm.deal(USER, STARTING_BALANCE); // Give USER a starting balance
     }
 
     function testMinimumDollarIsFive() public {
