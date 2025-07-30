@@ -9,9 +9,10 @@ import {DeployFundMe} from "../script/DeployFundMe.s.sol";
 contract FundMeTest is Test {
     FundMe fundMe;
 
-    address USER =makeAddr("user");
+    address USER = makeAddr("user");
     uint256 constant SEND_VALUE = 10e18; // 10 ETH in wei
     uint256 constant STARTING_BALANCE = 100 ether; // Starting balance for the user
+
     // This function is called before each test
     function setUp() external {
         // Initialize variables or set up the environment for tests
@@ -44,8 +45,7 @@ contract FundMeTest is Test {
     //     assertEq(version, 4); // Assuming the expected version is 4
     // }
 
-
-      function testPriceFeedVersionIsAccurate() public {
+    function testPriceFeedVersionIsAccurate() public {
         if (block.chainid == 11155111) {
             uint256 version = fundMe.getVersion();
             assertEq(version, 4);
@@ -53,24 +53,36 @@ contract FundMeTest is Test {
             uint256 version = fundMe.getVersion();
             assertEq(version, 6);
         }
-  } 
+    }
 
-  function testFundFailsWihtoutEnoughEth() public{
-    vm.expectRevert(); //hey, the next line should revert
-    fundMe.fund(); // This should revert if not enough ETH is sent
-  }
+    function testFundFailsWihtoutEnoughEth() public {
+        vm.expectRevert(); //hey, the next line should revert
+        fundMe.fund(); // This should revert if not enough ETH is sent
+    }
 
-  function testFundUpdatesFundedDataStructure() public{
-    vm.prank(USER); // the next Tx will be sent by user
-    fundMe.fund{value: SEND_VALUE}();
-    uint256 fundedAmount = fundMe.getAddressToAmountFunded(address(USER));
-    assertEq(fundedAmount, SEND_VALUE); // Check if the funded amount is correctly updated
-  }
+    function testFundUpdatesFundedDataStructure() public {
+        vm.prank(USER); // the next Tx will be sent by user
+        fundMe.fund{value: SEND_VALUE}();
+        uint256 fundedAmount = fundMe.getAddressToAmountFunded(address(USER));
+        assertEq(fundedAmount, SEND_VALUE); // Check if the funded amount is correctly updated
+    }
 
-      function testAddFunderToArrayOfFunders(){
+    function testAddFunderToArrayOfFunders() {
         vm.prank(USER); // the next Tx will be sent by user
         fundMe.fund{value: SEND_VALUE}();
         address funder = fundMe.getFunder(0); // Get the first funder
         assertEq(funder, USER); // Check if the funder is correctly added to the
+    }
+
+    modifier funded() {
+        vm.prank(USER); // the next Tx will be sent by user
+        fundMe.fund{value: SEND_VALUE}();
+        _;
+    }
+
+    function testOnlyOwnerCanWithdraw() public funded {
+        vm.prank(USER); // the next Tx will be sent by user
+        vm.expectRevert(); // Expect revert for non-owner withdrawal
+        fundMe.withdraw();
     }
 }
