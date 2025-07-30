@@ -67,7 +67,7 @@ contract FundMeTest is Test {
         assertEq(fundedAmount, SEND_VALUE); // Check if the funded amount is correctly updated
     }
 
-    function testAddFunderToArrayOfFunders() {
+  function testAddFunderToArrayOfFunders() public {
         vm.prank(USER); // the next Tx will be sent by user
         fundMe.fund{value: SEND_VALUE}();
         address funder = fundMe.getFunder(0); // Get the first funder
@@ -85,4 +85,10 @@ contract FundMeTest is Test {
         vm.expectRevert(); // Expect revert for non-owner withdrawal
         fundMe.withdraw();
     }
+
+  function testWithdrawWithASingleFunder() public funded {
+    //Arrange
+    //Act
+    //Assert
+  }
 }
