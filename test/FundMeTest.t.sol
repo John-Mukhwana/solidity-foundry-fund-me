@@ -66,4 +66,11 @@ contract FundMeTest is Test {
     uint256 fundedAmount = fundMe.getAddressToAmountFunded(address(USER));
     assertEq(fundedAmount, SEND_VALUE); // Check if the funded amount is correctly updated
   }
+
+      function testAddFunderToArrayOfFunders(){
+        vm.prank(USER); // the next Tx will be sent by user
+        fundMe.fund{value: SEND_VALUE}();
+        address funder = fundMe.getFunder(0); // Get the first funder
+        assertEq(funder, USER); // Check if the funder is correctly added to the
+    }
 }
