@@ -110,11 +110,11 @@ contract FundMeTest is Test {
         hoax(address(i), SEND_VALUE);
         fundMe.fund{value: SEND_VALUE}();
     }
-    // Act
+    // Arrange
     uint256 startingFundMeBalance = address(fundMe).balance;
     uint256 startingOwnerBalance = fundMe.getOwner().balance;
      
-
+    //Act
     vm.startPrank(fundMe.getOwner());
     fundMe.withdraw();
 
