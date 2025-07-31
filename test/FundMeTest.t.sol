@@ -117,7 +117,6 @@ contract FundMeTest is Test {
 
     vm.startPrank(fundMe.getOwner());
     fundMe.withdraw();
-    vm.stopPrank();
 
     // Assert
     assert(address(fundMe).balance == 0);
