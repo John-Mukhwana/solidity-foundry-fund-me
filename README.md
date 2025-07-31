@@ -242,28 +242,184 @@ forge create --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY src/FundMe.so
 ### Mainnet
 - **ETH/USD**: `0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419`
 
-## 🧪 Testing
+## 🧪 Advanced Testing & Gas Optimization
+
+### Gas Snapshots & Performance Analysis
+
+**Create and manage gas snapshots:**
+```bash
+# Create gas snapshot for all tests
+forge snapshot
+
+# Create snapshot for specific test
+forge snapshot --mt testWithdrawFromMultipleFunders
+
+# Compare current gas usage with snapshot
+forge snapshot --diff
+
+# Check if gas usage matches snapshot (CI/CD)
+forge snapshot --check
+
+# Generate detailed gas report
+forge test --gas-report
+```
+
+**Gas snapshot files:**
+- `.gas-snapshot` - Contains gas usage for each test function
+- Used for regression testing and optimization tracking
+
+### Storage Optimization Patterns
+
+**1. Variable Packing:**
+```solidity
+// ❌ Inefficient (uses 3 storage slots)
+uint256 value1;    // Slot 0 (32 bytes)
+uint128 value2;    // Slot 1 (16 bytes, wastes 16 bytes)
+uint128 value3;    // Slot 2 (16 bytes, wastes 16 bytes)
+
+// ✅ Efficient (uses 2 storage slots)
+uint256 value1;    // Slot 0 (32 bytes)
+uint128 value2;    // Slot 1 (16 bytes)
+uint128 value3;    // Slot 1 (16 bytes) - packed together!
+```
+
+**2. Memory vs Storage Optimization:**
+```solidity
+// Gas-optimized withdrawal using memory array
+function cheaperWithdraw() public onlyOwner {
+    address[] memory funders = s_funders;  // Copy to memory once
+    for (uint256 funderIndex = 0; funderIndex < funders.length; funderIndex++) {
+        address funder = funders[funderIndex];
+        s_addressToAmountFunded[funder] = 0;
+    }
+    s_funders = new address[](0);
+    (bool success,) = i_owner.call{value: address(this).balance}("");
+    require(success);
+}
+```
+
+### Advanced Testing Patterns
+
+**1. Test Modifiers for Setup:**
+```solidity
+modifier funded() {
+    vm.prank(USER);
+    fundMe.fund{value: SEND_VALUE}();
+    _;
+}
+
+function testOnlyOwnerCanWithdraw() public funded {
+    vm.expectRevert();
+    vm.prank(USER);
+    fundMe.withdraw();
+}
+```
+**Purpose:** Reusable test setup that automatically funds the contract before test execution.
+
+**2. Multiple Funder Testing:**
+```solidity
+function testWithdrawFromMultipleFunders() public funded {
+    uint160 numberOfFunders = 10;
+    uint160 startingFunderIndex = 1;
+    
+    for (uint160 i = startingFunderIndex; i < numberOfFunders + startingFunderIndex; i++) {
+        hoax(address(i), SEND_VALUE);  // prank + deal combined
+        fundMe.fund{value: SEND_VALUE}();
+    }
+    
+    vm.startPrank(fundMe.getOwner());
+    fundMe.withdraw();
+    vm.stopPrank();
+}
+```
+**Purpose:** Tests contract behavior with multiple funders to ensure proper state management.
+
+**3. Gas Comparison Testing:**
+```solidity
+function testWithdrawFromMultipleFundersCheaper() public funded {
+    // Setup multiple funders (same as above)
+    vm.startPrank(fundMe.getOwner());
+    fundMe.cheaperWithdraw();  // Test optimized version
+    vm.stopPrank();
+}
+```
+**Purpose:** Compare gas usage between standard and optimized contract functions.
+
+### Advanced Foundry Cheatcodes
+
+**Address Generation:**
+```solidity
+address USER = makeAddr("user");  // Deterministic labeled address
+```
+
+**Combined Operations:**
+```solidity
+hoax(address(1), SEND_VALUE);  // vm.prank() + vm.deal() in one call
+```
+
+**Extended Pranking:**
+```solidity
+// Single call
+vm.prank(USER);
+fundMe.fund{value: SEND_VALUE}();
+
+// Multiple calls
+vm.startPrank(fundMe.getOwner());
+fundMe.withdraw();
+fundMe.someOtherFunction();
+vm.stopPrank();
+```
+
+### AAA Testing Pattern Implementation
+
+**Structure every test with:**
+```solidity
+function testExample() public {
+    // 🔧 ARRANGE - Set up initial conditions
+    uint256 startingBalance = address(fundMe).balance;
+    
+    // ⚡ ACT - Execute the behavior being tested
+    vm.prank(USER);
+    fundMe.fund{value: SEND_VALUE}();
+    
+    // ✅ ASSERT - Verify the results
+    assertEq(address(fundMe).balance, startingBalance + SEND_VALUE);
+}
+```
 
 ### Writing Tests
 
-Create test files in the `test/` directory:
+Create comprehensive test files in the `test/` directory:
 
 ```solidity
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity ^0.8.30;
 
-import {Test} from "forge-std/Test.sol";
+import {Test, console} from "forge-std/Test.sol";
 import {FundMe} from "../src/FundMe.sol";
+import {DeployFundMe} from "../script/DeployFundMe.s.sol";
 
 contract FundMeTest is Test {
     FundMe fundMe;
+    address USER = makeAddr("user");
+    uint256 constant SEND_VALUE = 10e18;
+    uint256 constant STARTING_BALANCE = 100 ether;
     
-    function setUp() public {
-        // Setup test environment
+    function setUp() external {
+        DeployFundMe deployFundMe = new DeployFundMe();
+        fundMe = deployFundMe.run();
+        vm.deal(USER, STARTING_BALANCE);
     }
     
-    function testMinimumDollarIsFive() public {
-        // Test implementation
+    modifier funded() {
+        vm.prank(USER);
+        fundMe.fund{value: SEND_VALUE}();
+        _;
+    }
+    
+    function testFundFailsWithoutEnoughEth() public {
+        vm.expectRevert();
+        fundMe.fund();
     }
 }
 ```
@@ -276,6 +432,15 @@ forge test --match-path test/FundMeTest.t.sol
 
 # Run specific test function
 forge test --match-test testMinimumDollarIsFive
+
+# Run with verbosity for debugging
+forge test --match-test testWithdrawFromMultipleFunders -vvv
+
+# Run tests with gas reporting
+forge test --gas-report
+
+# Run tests on forked network
+forge test --fork-url $SEPOLIA_RPC_URL
 ```
 
 ## 🔐 Security Considerations
