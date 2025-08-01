@@ -3,7 +3,7 @@
 pragma solidity ^0.8.30;
 
 import {Test, console} from "forge-std/Test.sol";
-import {FundMe} from "../../src/FundMe.sol";
+import {FundMe} from "../../src/FundeMe.sol";
 import {DeployFundMe} from "../../script/DeployFundMe.s.sol";
 
 contract FundMeTest is Test {
@@ -67,7 +67,7 @@ contract FundMeTest is Test {
         assertEq(fundedAmount, SEND_VALUE); // Check if the funded amount is correctly updated
     }
 
-  function testAddFunderToArrayOfFunders() public {
+    function testAddFunderToArrayOfFunders() public {
         vm.prank(USER); // the next Tx will be sent by user
         fundMe.fund{value: SEND_VALUE}();
         address funder = fundMe.getFunder(0); // Get the first funder
@@ -86,67 +86,88 @@ contract FundMeTest is Test {
         fundMe.withdraw();
     }
 
-  function testWithdrawWithASingleFunder() public funded {
-    //Arrange
-    uint256 startingOwnerBalance=fundMe.getOwner().balance;
-    uint256 startingFundMeBalance = address(fundMe).balance;
-    //Act
-    vm.prank(fundMe.getOwner()); // The next Tx will be sent by the owner
-    fundMe.withdraw();
-    //Assert
-    uint256 endingOwnerBalance = fundMe.getOwner().balance;
-    uint256 endingFundMeBalance = address(fundMe).balance;
-    assertEq(endingFundMeBalance, 0); // Check if the contract balance is zero
-    assertEq(startingFundMeBalance + startingOwnerBalance, endingOwnerBalance); // Check if the owner's balance is updated correctly
-  }
-  
-  function testWithdrawFromMultipleFunders() public funded {
-    // Arrange
-    uint160 numberOfFunders = 10;
-    uint160 startingFunderIndex = 1;
-    for (uint160 i = startingFunderIndex; i < numberOfFunders + startingFunderIndex; i++) {
-        // we get hoax from stdcheats
-        // prank + deal
-        hoax(address(i), SEND_VALUE);
-        fundMe.fund{value: SEND_VALUE}();
+    function testWithdrawWithASingleFunder() public funded {
+        //Arrange
+        uint256 startingOwnerBalance = fundMe.getOwner().balance;
+        uint256 startingFundMeBalance = address(fundMe).balance;
+        //Act
+        vm.prank(fundMe.getOwner()); // The next Tx will be sent by the owner
+        fundMe.withdraw();
+        //Assert
+        uint256 endingOwnerBalance = fundMe.getOwner().balance;
+        uint256 endingFundMeBalance = address(fundMe).balance;
+        assertEq(endingFundMeBalance, 0); // Check if the contract balance is zero
+        assertEq(
+            startingFundMeBalance + startingOwnerBalance,
+            endingOwnerBalance
+        ); // Check if the owner's balance is updated correctly
     }
-    // Arrange
-    uint256 startingFundMeBalance = address(fundMe).balance;
-    uint256 startingOwnerBalance = fundMe.getOwner().balance;
-     
-    //Act
-    vm.startPrank(fundMe.getOwner());
-    fundMe.withdraw();
 
-    // Assert
-    assert(address(fundMe).balance == 0);
-    assert(startingFundMeBalance + startingOwnerBalance == fundMe.getOwner().balance);
-    assert((numberOfFunders + 1) * SEND_VALUE == fundMe.getOwner().balance - startingOwnerBalance);
-}
+    function testWithdrawFromMultipleFunders() public funded {
+        // Arrange
+        uint160 numberOfFunders = 10;
+        uint160 startingFunderIndex = 1;
+        for (
+            uint160 i = startingFunderIndex;
+            i < numberOfFunders + startingFunderIndex;
+            i++
+        ) {
+            // we get hoax from stdcheats
+            // prank + deal
+            hoax(address(i), SEND_VALUE);
+            fundMe.fund{value: SEND_VALUE}();
+        }
+        // Arrange
+        uint256 startingFundMeBalance = address(fundMe).balance;
+        uint256 startingOwnerBalance = fundMe.getOwner().balance;
 
+        //Act
+        vm.startPrank(fundMe.getOwner());
+        fundMe.withdraw();
 
-
-  function testWithdrawFromMultipleFundersCheaper() public funded {
-    // Arrange
-    uint160 numberOfFunders = 10;
-    uint160 startingFunderIndex = 1;
-    for (uint160 i = startingFunderIndex; i < numberOfFunders + startingFunderIndex; i++) {
-        // we get hoax from stdcheats
-        // prank + deal
-        hoax(address(i), SEND_VALUE);
-        fundMe.fund{value: SEND_VALUE}();
+        // Assert
+        assert(address(fundMe).balance == 0);
+        assert(
+            startingFundMeBalance + startingOwnerBalance ==
+                fundMe.getOwner().balance
+        );
+        assert(
+            (numberOfFunders + 1) * SEND_VALUE ==
+                fundMe.getOwner().balance - startingOwnerBalance
+        );
     }
-    // Arrange
-    uint256 startingFundMeBalance = address(fundMe).balance;
-    uint256 startingOwnerBalance = fundMe.getOwner().balance;
-     
-    //Act
-    vm.startPrank(fundMe.getOwner());
-    fundMe.cheaperWithdraw();
 
-    // Assert
-    assert(address(fundMe).balance == 0);
-    assert(startingFundMeBalance + startingOwnerBalance == fundMe.getOwner().balance);
-    assert((numberOfFunders + 1) * SEND_VALUE == fundMe.getOwner().balance - startingOwnerBalance);
-}
+    function testWithdrawFromMultipleFundersCheaper() public funded {
+        // Arrange
+        uint160 numberOfFunders = 10;
+        uint160 startingFunderIndex = 1;
+        for (
+            uint160 i = startingFunderIndex;
+            i < numberOfFunders + startingFunderIndex;
+            i++
+        ) {
+            // we get hoax from stdcheats
+            // prank + deal
+            hoax(address(i), SEND_VALUE);
+            fundMe.fund{value: SEND_VALUE}();
+        }
+        // Arrange
+        uint256 startingFundMeBalance = address(fundMe).balance;
+        uint256 startingOwnerBalance = fundMe.getOwner().balance;
+
+        //Act
+        vm.startPrank(fundMe.getOwner());
+        fundMe.cheaperWithdraw();
+
+        // Assert
+        assert(address(fundMe).balance == 0);
+        assert(
+            startingFundMeBalance + startingOwnerBalance ==
+                fundMe.getOwner().balance
+        );
+        assert(
+            (numberOfFunders + 1) * SEND_VALUE ==
+                fundMe.getOwner().balance - startingOwnerBalance
+        );
+    }
 }

@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.19;
+pragma solidity 0.8.30;
 
 import {DeployFundMe} from "../../script/DeployFundMe.s.sol";
 import {FundFundMe, WithdrawFundMe} from "../../script/Interactions.s.sol";
-import {FundMe} from "../../src/FundMe.sol";
+import {FundMe} from "../../src/FundeMe.sol";
 import {HelperConfig} from "../../script/HelperConfig.s.sol";
 import {Test, console} from "forge-std/Test.sol";
 import {StdCheats} from "forge-std/StdCheats.sol";
@@ -30,7 +30,9 @@ contract InteractionsTest is ZkSyncChainChecker, StdCheats, Test {
             (fundMe, helperConfig) = deployer.deployFundMe();
         } else {
             helperConfig = new HelperConfig();
-            fundMe = new FundMe(helperConfig.getConfigByChainId(block.chainid).priceFeed);
+            fundMe = new FundMe(
+                helperConfig.getConfigByChainId(block.chainid).priceFeed
+            );
         }
         vm.deal(USER, STARTING_USER_BALANCE);
     }
@@ -52,6 +54,9 @@ contract InteractionsTest is ZkSyncChainChecker, StdCheats, Test {
 
         assert(address(fundMe).balance == 0);
         assertEq(afterUserBalance + SEND_VALUE, preUserBalance);
-        assertEq(preOwnerBalance + SEND_VALUE + originalFundMeBalance, afterOwnerBalance);
+        assertEq(
+            preOwnerBalance + SEND_VALUE + originalFundMeBalance,
+            afterOwnerBalance
+        );
     }
 }
