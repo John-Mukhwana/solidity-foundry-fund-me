@@ -476,7 +476,22 @@ forge install
 ```
 
 
+
 ## 🧑‍💻 Lessons Learned & Best Practices
+
+- **Advanced Testing Patterns:**
+  - Use test modifiers (e.g., `funded`) for reusable setup.
+  - Multi-user testing with `hoax(address, value)` for efficient address and balance setup.
+  - Gas comparison tests for `withdraw()` vs `cheaperWithdraw()`.
+  - AAA (Arrange-Act-Assert) pattern for clear test structure.
+  - Deterministic address generation with `makeAddr("label")`.
+  - Forked network testing using `--fork-url` for integration with live contracts.
+  - Storage optimization: variable packing, memory vs storage, and gas snapshot tracking.
+  - Cheatcodes: `vm.prank`, `vm.startPrank`, `vm.stopPrank`, `hoax`.
+  - Public getter usage for private state in tests.
+  - Environment variable management for RPC URLs and private keys.
+  - Troubleshooting common errors (import paths, struct getter usage, msg.sender in scripts).
+  - Documented lessons learned and best practices.
 
 - Always use the correct contract address (not a wallet address) for external contract calls, especially for Chainlink price feeds.
 - When testing contracts that interact with live oracles, use `--fork-url` to fork a real network (e.g., Sepolia) so the contract exists at the given address.

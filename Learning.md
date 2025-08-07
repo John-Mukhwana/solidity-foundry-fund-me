@@ -217,4 +217,33 @@ function testWithdrawFromMultipleFunders() public funded {
 
 ---
 
+
+---
+
+## Advanced Testing, Cheatcodes, and Optimization Patterns
+
+- **Gas Snapshots & Storage Optimization:**
+  - How to use `forge snapshot` and interpret `.gas-snapshot` files.
+  - Variable packing and memory vs storage for gas savings.
+- **Advanced Test Architecture:**
+  - Test modifiers for setup.
+  - Multi-user testing with loops and `hoax`.
+  - Gas comparison methodology.
+- **Cheatcode Mastery:**
+  - `hoax()` for combined prank and deal.
+  - Extended pranking strategies.
+  - Deterministic address generation.
+- **AAA Pattern:**
+  - Arrange-Act-Assert structure for all tests.
+- **Best Practices:**
+  - Edge case coverage, state verification, and gas optimization.
+  - Test isolation and setup with `setUp()`.
+  - Debugging with `console.log` and verbosity flags.
+  - Forked network and environment variable usage.
+  - Storage layout and optimization.
+- **Key Takeaways:**
+  - Constructor argument matching, public getters, test flags, view functions, coverage, correct contract addresses, Chainlink documentation, configuration pattern, struct getter usage, msg.sender in scripts, gas snapshots, storage optimization, test modifiers, hoax cheatcode, AAA pattern, multi-funder testing, state verification, documentation.
+
+---
+
 **Happy Learning!**
