@@ -4,7 +4,7 @@ pragma solidity ^0.8.30;
 
 import {DeployFundMe} from "../../script/DeployFundMe.s.sol";
 import {FundFundMe, WithdrawFundMe} from "../../script/Interactions.s.sol";
-import {FundMe} from "../../src/FundeMe.sol";
+import {FundMe} from "../../src/FundMe.sol";
 import {HelperConfig} from "../../script/HelperConfig.s.sol";
 import {Test, console} from "forge-std/Test.sol";
 import {StdCheats} from "forge-std/StdCheats.sol";
@@ -27,7 +27,8 @@ contract InteractionsTest is ZkSyncChainChecker, StdCheats, Test {
     function setUp() external skipZkSync {
         if (!isZkSyncChain()) {
             DeployFundMe deployer = new DeployFundMe();
-            (fundMe, helperConfig) = deployer.deployFundMe();
+            fundMe = deployer.run();
+            helperConfig = new HelperConfig();
         } else {
             helperConfig = new HelperConfig();
             fundMe = new FundMe(
