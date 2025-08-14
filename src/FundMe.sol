@@ -106,12 +106,27 @@ contract FundMe {
         return s_funders[index];
     }
 
+    /// @notice Returns the list of funders
+    function getFunders() public view returns (address[] memory) {
+        return s_funders;
+    }
+
     function getOwner() public view returns (address) {
         return i_owner;
     }
 
     function getPriceFeed() public view returns (AggregatorV3Interface) {
         return s_priceFeed;
+    }
+
+    /// @notice Returns arrays of all funder addresses and their corresponding funded amounts
+    function getFundersWithAmounts() public view returns (address[] memory, uint256[] memory) {
+        address[] memory funders = s_funders;
+        uint256[] memory amounts = new uint256[](funders.length);
+        for (uint256 i = 0; i < funders.length; i++) {
+            amounts[i] = s_addressToAmountFunded[funders[i]];
+        }
+        return (funders, amounts);
     }
 
     /// @notice Returns the total number of funders

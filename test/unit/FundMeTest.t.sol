@@ -185,6 +185,45 @@ contract FundMeTest is Test {
         vm.deal(user2, STARTING_BALANCE);
         vm.prank(user2);
         fundMe.fund{value: SEND_VALUE}();
-        assertEq(fundMe.getTotalFunded(), SEND_VALUE * 2);
+        uint256 totalFunded = fundMe.getTotalFunded();
+        uint256 fundersCount = fundMe.getFundersCount();
+        console.log("Total Funded:", totalFunded);
+        console.log("Funders Count:", fundersCount);
+        assertEq(totalFunded, SEND_VALUE * 2);
+        assertEq(fundersCount, 2);
+    }
+
+    function testGetFundersWithAmountsInitial() public {
+        (address[] memory funders, uint256[] memory amounts) = fundMe.getFundersWithAmounts();
+        assertEq(funders.length, 0);
+        assertEq(amounts.length, 0);
+    }
+
+    function testGetFundersWithAmountsAfterOneFund() public {
+        vm.prank(USER);
+        fundMe.fund{value: SEND_VALUE}();
+        (address[] memory funders, uint256[] memory amounts) = fundMe.getFundersWithAmounts();
+        assertEq(funders.length, 1);
+        assertEq(amounts.length, 1);
+        assertEq(funders[0], USER);
+        assertEq(amounts[0], SEND_VALUE);
+    }
+
+    function testGetFundersWithAmountsAfterTwoFunds() public {
+        vm.prank(USER);
+        fundMe.fund{value: SEND_VALUE}();
+        address user2 = makeAddr("user2");
+        vm.deal(user2, STARTING_BALANCE);
+        vm.prank(user2);
+        fundMe.fund{value: SEND_VALUE}();
+        (address[] memory funders, uint256[] memory amounts) = fundMe.getFundersWithAmounts();
+        assertEq(funders.length, 2);
+        assertEq(amounts.length, 2);
+        assertEq(funders[0], USER);
+        assertEq(amounts[0], SEND_VALUE);
+        assertEq(funders[1], user2);
+        assertEq(amounts[1], SEND_VALUE);
+        console.log("Funder 1:", funders[0], "Amount:", amounts[0]);
+        console.log("Funder 2:", funders[1], "Amount:", amounts[1]);
     }
 }
