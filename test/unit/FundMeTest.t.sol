@@ -97,21 +97,14 @@ contract FundMeTest is Test {
         uint256 endingOwnerBalance = fundMe.getOwner().balance;
         uint256 endingFundMeBalance = address(fundMe).balance;
         assertEq(endingFundMeBalance, 0); // Check if the contract balance is zero
-        assertEq(
-            startingFundMeBalance + startingOwnerBalance,
-            endingOwnerBalance
-        ); // Check if the owner's balance is updated correctly
+        assertEq(startingFundMeBalance + startingOwnerBalance, endingOwnerBalance); // Check if the owner's balance is updated correctly
     }
 
     function testWithdrawFromMultipleFunders() public funded {
         // Arrange
         uint160 numberOfFunders = 10;
         uint160 startingFunderIndex = 1;
-        for (
-            uint160 i = startingFunderIndex;
-            i < numberOfFunders + startingFunderIndex;
-            i++
-        ) {
+        for (uint160 i = startingFunderIndex; i < numberOfFunders + startingFunderIndex; i++) {
             // we get hoax from stdcheats
             // prank + deal
             hoax(address(i), SEND_VALUE);
@@ -127,25 +120,15 @@ contract FundMeTest is Test {
 
         // Assert
         assert(address(fundMe).balance == 0);
-        assert(
-            startingFundMeBalance + startingOwnerBalance ==
-                fundMe.getOwner().balance
-        );
-        assert(
-            (numberOfFunders + 1) * SEND_VALUE ==
-                fundMe.getOwner().balance - startingOwnerBalance
-        );
+        assert(startingFundMeBalance + startingOwnerBalance == fundMe.getOwner().balance);
+        assert((numberOfFunders + 1) * SEND_VALUE == fundMe.getOwner().balance - startingOwnerBalance);
     }
 
     function testWithdrawFromMultipleFundersCheaper() public funded {
         // Arrange
         uint160 numberOfFunders = 10;
         uint160 startingFunderIndex = 1;
-        for (
-            uint160 i = startingFunderIndex;
-            i < numberOfFunders + startingFunderIndex;
-            i++
-        ) {
+        for (uint160 i = startingFunderIndex; i < numberOfFunders + startingFunderIndex; i++) {
             // we get hoax from stdcheats
             // prank + deal
             hoax(address(i), SEND_VALUE);
@@ -161,13 +144,47 @@ contract FundMeTest is Test {
 
         // Assert
         assert(address(fundMe).balance == 0);
-        assert(
-            startingFundMeBalance + startingOwnerBalance ==
-                fundMe.getOwner().balance
-        );
-        assert(
-            (numberOfFunders + 1) * SEND_VALUE ==
-                fundMe.getOwner().balance - startingOwnerBalance
-        );
+        assert(startingFundMeBalance + startingOwnerBalance == fundMe.getOwner().balance);
+        assert((numberOfFunders + 1) * SEND_VALUE == fundMe.getOwner().balance - startingOwnerBalance);
+    }
+
+    function testGetFundersCountInitial() public {
+        assertEq(fundMe.getFundersCount(), 0);
+    }
+
+    function testGetFundersCountAfterOneFund() public {
+        vm.prank(USER);
+        fundMe.fund{value: SEND_VALUE}();
+        assertEq(fundMe.getFundersCount(), 1);
+    }
+
+    function testGetFundersCountAfterTwoFunds() public {
+        vm.prank(USER);
+        fundMe.fund{value: SEND_VALUE}();
+        address user2 = makeAddr("user2");
+        vm.deal(user2, STARTING_BALANCE);
+        vm.prank(user2);
+        fundMe.fund{value: SEND_VALUE}();
+        assertEq(fundMe.getFundersCount(), 2);
+    }
+
+    function testGetTotalFundedInitial() public {
+        assertEq(fundMe.getTotalFunded(), 0);
+    }
+
+    function testGetTotalFundedAfterOneFund() public {
+        vm.prank(USER);
+        fundMe.fund{value: SEND_VALUE}();
+        assertEq(fundMe.getTotalFunded(), SEND_VALUE);
+    }
+
+    function testGetTotalFundedAfterTwoFunds() public {
+        vm.prank(USER);
+        fundMe.fund{value: SEND_VALUE}();
+        address user2 = makeAddr("user2");
+        vm.deal(user2, STARTING_BALANCE);
+        vm.prank(user2);
+        fundMe.fund{value: SEND_VALUE}();
+        assertEq(fundMe.getTotalFunded(), SEND_VALUE * 2);
     }
 }
